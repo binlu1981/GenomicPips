@@ -72,9 +72,11 @@ def creat_folder(folders_list):
 
 if sys.version_info[0] > 2:
     ext = input("Given the input file extension >")
+    aa_len = input("Give the at least length of the AA >")
     from io import StringIO
 else:
     ext = raw_input("Given the input file extension >")
+    aa_len = raw_input("Give the at least length of the AA >")
     from StringIO import StringIO
 
 folders = ["01_NodeSeq","02_Trees","03_rate","04_siteFreq"]
@@ -106,20 +108,21 @@ for file in glob.glob('./*'+ext):
                 seqs_dict = rst2dict(all_seqs)
             else:
                 continue
-            with open(os.path.join(work_paths[0],NodeSeq_fmt),"w") as NodeSeq:
-                for k in sorted(seqs_dict.keys()):
-                    NodeSeq.write("%s\t%s\n" % (k,seqs_dict[k]))
-            with open(os.path.join(work_paths[1],Tree_fmt),"w") as Trees:
-                if len(rst2tree(records)) != 0:
-                    Trees.write("%s\n" % (rst2tree(records)))
-            siteFreq_df = rst2siteFreq(seqs_dict)
-            if not siteFreq_df.empty:
-                siteFreq_df.to_csv(os.path.join(work_paths[3],siteFreq_fmt),index=False,header=False,sep="\t",float_format='%.16f')
-    with open(rate_fmt) as rt:
-        rat_record = rt.read()
-        rate_df = rate2rat(rat_record)
-        if len(rate_df["Rate"]) != 0:
-            rate_df["Rate"].to_csv(os.path.join(work_paths[2],rate_fmt),index=False,float_format='%.3f')
+            if len(list(seqs_dict.values())[0]) > int(aa_len):
+                with open(os.path.join(work_paths[0],NodeSeq_fmt),"w") as NodeSeq:
+                    for k in sorted(seqs_dict.keys()):
+                        NodeSeq.write("%s\t%s\n" % (k,seqs_dict[k]))
+                with open(os.path.join(work_paths[1],Tree_fmt),"w") as Trees:
+                    if len(rst2tree(records)) != 0:
+                        Trees.write("%s\n" % (rst2tree(records)))
+                siteFreq_df = rst2siteFreq(seqs_dict)
+                if not siteFreq_df.empty:
+                    siteFreq_df.to_csv(os.path.join(work_paths[3],siteFreq_fmt),index=False,header=False,sep="\t",float_format='%.16f')
+                with open(rate_fmt) as rt:
+                    rat_record = rt.read()
+                    rate_df = rate2rat(rat_record)
+                    if len(rate_df["Rate"]) != 0:
+                        rate_df["Rate"].to_csv(os.path.join(work_paths[2],rate_fmt),index=False,float_format='%.3f')
 
 
 
