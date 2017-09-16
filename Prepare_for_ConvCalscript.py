@@ -110,13 +110,16 @@ for file in glob.glob('./*'+ext):
                 for k in sorted(seqs_dict.keys()):
                     NodeSeq.write("%s\t%s\n" % (k,seqs_dict[k]))
             with open(os.path.join(work_paths[1],Tree_fmt),"w") as Trees:
-                Trees.write("%s\n" % (rst2tree(records)))
+                if len(rst2tree(records)) != 0:
+                    Trees.write("%s\n" % (rst2tree(records)))
             siteFreq_df = rst2siteFreq(seqs_dict)
-            siteFreq_df.to_csv(os.path.join(work_paths[3],siteFreq_fmt),index=False,header=False,sep="\t",float_format='%.16f')
+            if not siteFreq_df.empty:
+                siteFreq_df.to_csv(os.path.join(work_paths[3],siteFreq_fmt),index=False,header=False,sep="\t",float_format='%.16f')
     with open(rate_fmt) as rt:
         rat_record = rt.read()
         rate_df = rate2rat(rat_record)
-        rate_df["Rate"].to_csv(os.path.join(work_paths[2],rate_fmt),index=False,float_format='%.3f')
+        if len(rate_df["Rate"]) != 0:
+            rate_df["Rate"].to_csv(os.path.join(work_paths[2],rate_fmt),index=False,float_format='%.3f')
 
 
 
